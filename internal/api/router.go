@@ -4,18 +4,19 @@ import (
 	"net/http"
 
 	"github.com/example/telegram-fitness/internal/handlers"
-	"github.com/example/telegram-fitness/internal/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	internalmiddleware "github.com/example/telegram-fitness/internal/middleware"
 )
 
 func Router(db *pgxpool.Pool) http.Handler {
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	r.Use(chimiddleware.RequestID)
+	r.Use(chimiddleware.RealIP)
+	r.Use(chimiddleware.Logger)
+	r.Use(chimiddleware.Recoverer)
 
 	exerciseHandler := handlers.ExerciseHandler{DB: db}
 	profileHandler := handlers.ProfileHandler{DB: db}
@@ -26,7 +27,7 @@ func Router(db *pgxpool.Pool) http.Handler {
 	})
 
 	r.Route("/api", func(api chi.Router) {
-		api.Use(middleware.AuthMiddleware)
+		api.Use(internalmiddleware.AuthMiddleware)
 		api.Get("/exercises", exerciseHandler.ListExercises)
 		api.Get("/profile", profileHandler.GetProfile)
 	})
