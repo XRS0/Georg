@@ -32,6 +32,7 @@ Use `sql/schema.sql` to initialize PostgreSQL. It includes:
 - Builds the data-check-string and validates HMAC-SHA256 using the bot token
 - Validates `auth_date`
 - Stores the Telegram user in request context
+- (Optional) Allows a fallback web user when `ALLOW_WEB_AUTH=true`
 
 **Snippet:**
 
@@ -88,3 +89,6 @@ The frontend is served on `http://localhost:5173` and the backend on `http://loc
 
 - The frontend uses the Telegram WebApp SDK from `https://telegram.org/js/telegram-web-app.js`.
 - `VITE_API_BASE` can be adjusted to point to the backend when embedding in Telegram.
+- For browser-only testing without Telegram init data, set `ALLOW_WEB_AUTH=true` and optionally customize
+  the fallback user via `WEB_FALLBACK_TELEGRAM_ID`, `WEB_FALLBACK_FIRST_NAME`, `WEB_FALLBACK_LAST_NAME`,
+  and `WEB_FALLBACK_USERNAME`.

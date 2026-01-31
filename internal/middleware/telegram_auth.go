@@ -36,6 +36,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		if initData == "" {
+			if user, ok := fallbackWebUser(); ok {
+				ctx := context.WithValue(r.Context(), telegramUserKey, user)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+
 			http.Error(w, "missing init data", http.StatusUnauthorized)
 			return
 		}
@@ -55,6 +61,36 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), telegramUserKey, user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func fallbackWebUser() (models.TelegramUser, bool) {
+	if strings.ToLower(os.Getenv("ALLOW_WEB_AUTH")) != "true" {
+		return models.TelegramUser{}, false
+	}
+
+	userID := int64(-1)
+	if rawID := os.Getenv("WEB_FALLBACK_TELEGRAM_ID"); rawID != "" {
+		if parsedID, err := strconv.ParseInt(rawID, 10, 64); err == nil {
+			userID = parsedID
+		}
+	}
+
+	firstName := os.Getenv("WEB_FALLBACK_FIRST_NAME")
+	if firstName == "" {
+		firstName = "Web"
+	}
+	lastName := os.Getenv("WEB_FALLBACK_LAST_NAME")
+	username := os.Getenv("WEB_FALLBACK_USERNAME")
+	if username == "" {
+		username = "web_user"
+	}
+
+	return models.TelegramUser{
+		ID:        userID,
+		FirstName: firstName,
+		LastName:  lastName,
+		Username:  username,
+	}, true
 }
 
 func ValidateTelegramInitData(initData string, botToken string, maxAge time.Duration) (models.TelegramUser, error) {
