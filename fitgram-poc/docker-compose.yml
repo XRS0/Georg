@@ -1,3 +1,6 @@
+
+version: '3.8'
+
 services:
   db:
     image: postgres:15-alpine
@@ -16,7 +19,7 @@ services:
       dockerfile: ./backend/Dockerfile
     environment:
       DATABASE_URL: postgres://fitgram:password@db:5432/fitgram
-      TELEGRAM_BOT_TOKEN: 7352727460:AAGn0zZ4E2HhQETOETPuN089TQoNRE_t8ms
+      TELEGRAM_BOT_TOKEN: your_bot_token_here
     ports:
       - "3000:3000"
     depends_on:

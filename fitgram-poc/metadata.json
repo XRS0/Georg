@@ -1,0 +1,8 @@
+{
+  "name": "FitGram PoC",
+  "description": "A high-performance fitness platform Telegram Mini App with workout tracking, exercise video library, and profile streaks.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
